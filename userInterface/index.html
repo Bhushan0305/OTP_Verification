@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Appointment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background: #f7f7f7;
+        }
+        h1 {
+            text-align: center;
+        }
+        .working-hours {
+            text-align: center;
+            margin-bottom: 16px;
+            font-size: 1.1em;
+            color: #333;
+        }
+        .slots-container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px #0001;
+        }
+        .slot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 8px 0;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .slot:last-child {
+            border-bottom: none;
+        }
+        .slot button {
+            padding: 6px 16px;
+            border: none;
+            border-radius: 4px;
+            background: #007bff;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .slot button:disabled {
+            background: #aaa;
+            color: #eee;
+            cursor: not-allowed;
+        }
+        .slot button.booked {
+            background: #dc3545;
+            color: #fff;
+        }
+        .confirmation {
+            text-align: center;
+            color: green;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Book an Appointment</h1>
+    <div class="working-hours">
+        Working hours: <strong>09:00 AM - 05:00 PM</strong>
+    </div>
+    <div class="slots-container" id="slotsContainer">
+        <!-- Slots will be rendered here -->
+    </div>
+    <div class="confirmation" id="confirmation"></div>
+    <script>
+        // Generate 30-min slots for a single day (e.g., 9:00 to 17:00)
+        const startHour = 9;
+        const endHour = 17;
+        const slotDuration = 30; // minutes
+        const slots = [];
+        for (let hour = startHour; hour < endHour; hour++) {
+            for (let min = 0; min < 60; min += slotDuration) {
+                const start = `${String(hour).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
+                let endH = hour, endM = min + slotDuration;
+                if (endM >= 60) {
+                    endH += 1;
+                    endM -= 60;
+                }
+                const end = `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`;
+                slots.push({ start, end, booked: false });
+            }
+        }
+
+        // Example: Mark the last slot as booked by default
+        slots[slots.length - 1].booked = true;
+
+        const slotsContainer = document.getElementById('slotsContainer');
+        const confirmation = document.getElementById('confirmation');
+
+        function renderSlots() {
+            slotsContainer.innerHTML = '';
+            slots.forEach((slot, idx) => {
+                const div = document.createElement('div');
+                div.className = 'slot';
+                div.innerHTML = `
+                    <span>${slot.start} - ${slot.end}</span>
+                    <button 
+                        class="${slot.booked ? 'booked' : ''}" 
+                        ${slot.booked ? 'disabled' : ''} 
+                        onclick="bookSlot(${idx})"
+                    >
+                        ${slot.booked ? 'Booked' : 'Book'}
+                    </button>
+                `;
+                slotsContainer.appendChild(div);
+            });
+        }
+
+        window.bookSlot = function(index) {
+            if (slots[index].booked) {
+                confirmation.textContent = `Slot ${slots[index].start} - ${slots[index].end} is already booked.`;
+                setTimeout(() => confirmation.textContent = '', 2000);
+                return;
+            }
+            slots[index].booked = true;
+            confirmation.textContent = `Appointment booked from ${slots[index].start} to ${slots[index].end}`;
+            renderSlots();
+            setTimeout(() => confirmation.textContent = '', 3000);
+        };
+
+        renderSlots();
+    </script>
+</body>
+</html>
