@@ -14,9 +14,9 @@ for i in range(6):
 s = smtplib.SMTP('smtp.gmail.com', 587)
 s.starttls()
 
-s.login("Your Gmail Account", "You app password")
+s.login("Your Gmail Account", "You app password")  # add your gmail and add your password 
 
-emailid = input("enter your email:")
+emailid = input("enter your email:")               # enter sender gmail.ID
 s.sendmail('Your gmail ID ',emailid,msg)
 
 a = input("Enter your OTP>>:")
